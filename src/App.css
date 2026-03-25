@@ -1,0 +1,65 @@
+.App {
+  width: 100%;
+  max-width: 560px;
+}
+
+.App-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.App-header p {
+  margin-top: 4px;
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s;
+}
+
+.task-item:hover {
+  border-color: var(--accent);
+}
+
+.task-item--done .task-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-checkbox {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.task-text {
+  transition: color 0.2s;
+}
+
+.task-empty {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 40px 0;
+}
