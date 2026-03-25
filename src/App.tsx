@@ -1,8 +1,11 @@
 import "./App.css";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 
 function App() {
+  const [newTaskText, setNewTaskText] = useState("");
   const tasks = useQuery(api.tasks.getTasks);
   // This is not a one-time fetch. Convex opens a live subscription to that query.
   // The moment any task changes in the database — from any client, anywhere — this component
@@ -20,12 +23,38 @@ function App() {
   // no backend server, no REST API, no manual data fetching — we have a fully reactive, type-safe, full-stack app.
   // That's the Convex model."
 
+  const createTask = useMutation(api.tasks.createTask);
+  const removeTask = useMutation(api.tasks.removeTask);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedText = newTaskText.trim();
+    if (!trimmedText) {
+      return;
+    }
+
+    await createTask({ text: trimmedText });
+    setNewTaskText("");
+  };
+
   return (
     <div className="App">
       <div className="App-header">
         <h1>Convex Tasks</h1>
-        <p>Click a checkbox to toggle via Convex mutation</p>
+        <p>Add, toggle, and remove tasks through Convex mutations</p>
       </div>
+      <form className="task-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          className="task-input"
+          value={newTaskText}
+          onChange={(event) => setNewTaskText(event.target.value)}
+          placeholder="Add a new task"
+        />
+        <button type="submit" className="task-add-button">
+          Add
+        </button>
+      </form>
       {tasks === undefined ? (
         <p className="task-empty">Loading…</p>
       ) : tasks.length === 0 ? (
@@ -46,6 +75,16 @@ function App() {
                 onClick={(e) => e.stopPropagation()}
               />
               <span className="task-text">{text}</span>
+              <button
+                type="button"
+                className="task-remove-button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  void removeTask({ id: _id });
+                }}
+              >
+                Remove
+              </button>
             </li>
           ))}
         </ul>

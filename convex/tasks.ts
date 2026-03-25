@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+// 取得
 export const getTasks = query({
   args: {},
   handler: async (ctx) => {
@@ -8,12 +9,39 @@ export const getTasks = query({
   },
 });
 
+// 作成
+export const createTask = mutation({
+  args: { text: v.string() },
+  handler: async (ctx, { text }) => {
+    const trimmedText = text.trim();
+    if (!trimmedText) {
+      throw new Error("Task text is required");
+    }
+
+    await ctx.db.insert("tasks", {
+      text: trimmedText,
+      isCompleted: false,
+    });
+  },
+});
+
+// 更新
 export const toggleTask = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, { id }) => {
     const task = await ctx.db.get(id);
     if (!task) throw new Error("Task not found");
     await ctx.db.patch(id, { isCompleted: !task.isCompleted });
+  },
+});
+
+// 削除
+export const removeTask = mutation({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, { id }) => {
+    const task = await ctx.db.get(id);
+    if (!task) throw new Error("Task not found");
+    await ctx.db.delete(id);
   },
 });
 
